@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Domain.Common;
 using Application.Common.Interfaces;
+using Domain.Entities;
 using Persistence.Configurations;
 
 namespace Persistence
@@ -13,6 +14,8 @@ namespace Persistence
     public class AppDbContext : DbContext, IDbContext
     {
         private readonly ITokenService _tokenService;
+
+        public DbSet<User> Users { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
