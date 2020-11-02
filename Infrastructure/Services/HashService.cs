@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using Application.Common.Interfaces;
 
 namespace Infrastructure.Services
@@ -10,14 +11,16 @@ namespace Infrastructure.Services
             return Encoding.ASCII.GetBytes(BCrypt.Net.BCrypt.HashPassword(password + Encoding.ASCII.GetString(salt)));
         }
 
-        public byte[] GetSalt(string userName)
+        public byte[] GetSalt(string userName, out byte[] salt)
         {
-            return Encoding.ASCII.GetBytes(userName.Insert())
+            var rnd = new Random();
+            salt = Encoding.ASCII.GetBytes(userName.Insert(rnd.Next(0, userName.Length - 1), userName.ToUpper()));
+            return salt;
         }
 
         public bool Verify(byte[] salt, byte[] hashPassword, string password)
         {
-            throw new System.NotImplementedException();
+            return BCrypt.Net.BCrypt.Verify(Encoding.ASCII.GetString(salt) + password, Encoding.ASCII.GetString(hashPassword));
         }
     }
 }

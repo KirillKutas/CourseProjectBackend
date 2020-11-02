@@ -27,8 +27,8 @@ namespace API.Services
         private ClaimsPrincipal User => _httpContextAccessor?.HttpContext?.User;
 
         public int GetUserId() => User.GetId();
-        
-        public void AppendSecurityToken()
+
+        public string AppendSecurityToken()
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appConfiguration.Audience.Secret);
@@ -37,7 +37,7 @@ namespace API.Services
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     // TODO: setup claims
-                    // new Claim(CustomClaimTypes.Id, userId.ToString()),
+                    //new Claim(CustomClaimTypes.Id, user.Id.ToString()),
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(_appConfiguration.Audience.TokenExpiryMinutes),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
@@ -46,12 +46,14 @@ namespace API.Services
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             // append authorization header
-            _httpContextAccessor.HttpContext.Response.Headers.Append("Authorization",  "Bearer " + tokenHandler.WriteToken(token));
+            _httpContextAccessor.HttpContext.Response.Headers.Append("Authorization", "Bearer " + tokenHandler.WriteToken(token));
+            return tokenHandler.WriteToken(token);
         }
 
         public string GetUserName()
         {
             // TODO: hardcoded;
+
             return "no username";
         }
     }

@@ -7,6 +7,6 @@ namespace Application.Common.Interfaces
 
         int GetUserId();
 
-        void AppendSecurityToken();
+        string AppendSecurityToken();
     }
 }

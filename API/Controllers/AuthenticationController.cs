@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Application.Authentication.Commands;
 using Application.Common.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -21,11 +22,29 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<string>> Login([FromBody] LoginCommand command)
         {
-            await Mediator.Send(command);
-            
-            // append security header
-            _tokenService.AppendSecurityToken();
-            return Ok();
+            try
+            {
+                var user = await Mediator.Send(command);
+
+                var result = new
+                {
+                    Token = _tokenService.AppendSecurityToken(),
+                    UserID = user.Id,
+                    user.UserName,
+                    RoleId = (int)user.Role
+                };
+
+                return new JsonResult(result);
+            }
+            catch (Exception ex)
+            {
+                var message = new
+                {
+                    message = ex.Message
+                };
+                Response.StatusCode = 401;
+                return new JsonResult(message);
+            }
         }
 
         [HttpPost("logout")]
