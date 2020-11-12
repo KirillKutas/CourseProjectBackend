@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Security.Cryptography;
 using System.Text;
 using Application.Common.Interfaces;
 
@@ -6,21 +6,29 @@ namespace Infrastructure.Services
 {
     class HashService : IHashService
     {
-        public byte[] GetHash(byte[] salt, string password)
+        public void CreatePasswordHash(string password, out byte[] passwordSalt, out byte[] passwordHash)
         {
-            return Encoding.ASCII.GetBytes(BCrypt.Net.BCrypt.HashPassword(password + Encoding.ASCII.GetString(salt)));
+            using (var hmac = new HMACSHA512())
+            {
+                passwordSalt = hmac.Key;
+                passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+            }
         }
 
-        public byte[] GetSalt(string userName, out byte[] salt)
-        {
-            var rnd = new Random();
-            salt = Encoding.ASCII.GetBytes(userName.Insert(rnd.Next(0, userName.Length - 1), userName.ToUpper()));
-            return salt;
-        }
 
-        public bool Verify(byte[] salt, byte[] hashPassword, string password)
+        public bool Verify(byte[] storedSalt, byte[] storedHash, string password)
         {
-            return BCrypt.Net.BCrypt.Verify(Encoding.ASCII.GetString(salt) + password, Encoding.ASCII.GetString(hashPassword));
+            using (var hmac = new HMACSHA512(storedSalt))
+            {
+                var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+                for (int i = 0; i < computedHash.Length; i++)
+                {
+                    if (computedHash[i] != storedHash[i])
+                        return false;
+                }
+
+                return true;
+            }
         }
     }
 }

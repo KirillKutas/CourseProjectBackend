@@ -9,6 +9,7 @@ namespace Domain.Entities
     {
         public Guid Id { get; set; }
         public string UserName { get; set; }
+        //public string UserEmail { get; set; }
         [JsonIgnore]
         public byte[] PasswordHash { get; set; }
         [JsonIgnore]

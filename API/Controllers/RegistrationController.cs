@@ -16,9 +16,9 @@ namespace API.Controllers
         {
             try
             {
-                await Mediator.Send(command);
+                var result = await Mediator.Send(command);
 
-                return Ok();
+                return new JsonResult(result);
             }
             catch (Exception ex)
             {

@@ -32,15 +32,15 @@ namespace Application.Registration.Commands
 
             if (user != null)
             {
-                throw new Exception("This user already exist");
+                throw new Exception("Such user already exists");
             }
-
+            _hashService.CreatePasswordHash(command.Password, out var passwordSalt, out var passwordHash);
             var newUser = new User()
             {
                 Id = Guid.NewGuid(),
                 UserName = command.UserName,
-                PasswordSalt = _hashService.GetSalt(command.UserName, out byte[] salt),
-                PasswordHash = _hashService.GetHash(salt, command.Password),
+                PasswordSalt = passwordSalt,
+                PasswordHash = passwordHash,
                 Role = Role.User
             };
 

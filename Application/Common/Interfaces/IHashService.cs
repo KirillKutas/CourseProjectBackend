@@ -3,8 +3,7 @@ namespace Application.Common.Interfaces
 {
     public interface IHashService
     {
-        byte[] GetSalt(string userName, out byte[] salt);
-        byte[] GetHash(byte[] salt, string password);
-        bool Verify(byte[] salt, byte[] hashPassword, string password);
+        void CreatePasswordHash(string password, out byte[] passwordSalt, out byte[] passwordHash);
+        bool Verify(byte[] storedSalt, byte[] storedHash, string password);
     }
 }
