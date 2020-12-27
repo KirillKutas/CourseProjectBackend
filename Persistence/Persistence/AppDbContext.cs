@@ -16,6 +16,10 @@ namespace Persistence
         private readonly ITokenService _tokenService;
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<Game> Games { get; set; }
+        public DbSet<Genre> Genres { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
@@ -83,6 +87,39 @@ namespace Persistence
             modelBuilder
                 .ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly)
                 .ApplyAuditableEntityConfiguration();
+            //relationship
+            modelBuilder.Entity<Game>()
+                .HasMany(g => g.Categories)
+                .WithMany(c => c.Games)
+                .UsingEntity(e => e.ToTable("GamesByCategories"));
+            modelBuilder.Entity<Game>()
+                .HasMany(g => g.Genres)
+                .WithMany(c => c.Games)
+                .UsingEntity(e => e.ToTable("GamesByGenres"));
+            modelBuilder.Entity<Game>()
+                .HasMany(g => g.Users)
+                .WithMany(c => c.Games)
+                .UsingEntity(e => e.ToTable("GamesForPeople"));
+
+
+            //defaults data
+            modelBuilder.Entity<Genre>().HasData(
+                new Genre[]
+                {
+                    new Genre {Id = 1, Name = "Free to play"},
+                    new Genre {Id = 2, Name = "Action"},
+                    new Genre {Id = 3, Name = "Racing"},
+                    new Genre {Id = 4, Name = "Strategy"},
+                    new Genre {Id = 5, Name = "Sports"},
+                    new Genre {Id = 6, Name = "Simulation"},
+                });
+
+            modelBuilder.Entity<Category>().HasData(
+                new Category[]
+                {
+                    new Category {Id = 1, Name = "Specials"},
+                    new Category {Id = 2, Name = "Virtual reality"},
+                });
 
             SetUtcDateTime(modelBuilder);
             RestrictCascadeDelete(modelBuilder);

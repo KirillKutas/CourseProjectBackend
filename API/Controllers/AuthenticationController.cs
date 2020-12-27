@@ -29,9 +29,11 @@ namespace API.Controllers
                 var result = new
                 {
                     Token = _tokenService.AppendSecurityToken(),
-                    UserID = user.Id,
+                    id = user.Id,
                     user.UserName,
-                    RoleId = (int)user.Role
+                    RoleId = (int)user.Role,
+                    user.Invoice,
+                    user.Image
                 };
 
                 return new JsonResult(result);

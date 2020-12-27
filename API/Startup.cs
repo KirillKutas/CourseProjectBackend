@@ -75,6 +75,10 @@ namespace API
                         //.RequireClaim(CustomClaimTypes.Mode, Enum.GetNames(typeof(EMode))) // all users must have valid App mode set
                         .Build();
                     obj.Filters.Add(new AuthorizeFilter(policy));
+                }).AddNewtonsoftJson(x =>
+                {
+                    x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                    x.SerializerSettings.MaxDepth = Int32.MaxValue;
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<IDbContext>())
@@ -110,7 +114,7 @@ namespace API
             if (Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
+                //app.UseDatabaseErrorPage();
             }
             else
             {

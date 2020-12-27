@@ -6,5 +6,7 @@
         /// The user identifier
         /// </summary>
         public const string Id = "id";
+
+        public const string Role = "role";
     }
 }

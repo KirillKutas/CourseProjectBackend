@@ -41,7 +41,9 @@ namespace Application.Registration.Commands
                 UserName = command.UserName,
                 PasswordSalt = passwordSalt,
                 PasswordHash = passwordHash,
-                Role = Role.User
+                Role = Role.User,
+                Image = "./assets/Images/NewUser.jpg",
+                Invoice = 100
             };
 
             _context.Users.Add(newUser);
